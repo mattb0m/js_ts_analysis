@@ -32,6 +32,20 @@ export class ts_summary {
                 
                 this.p.push([percentiles[i],p]);
             }
+
+            /* automatic IQR stats */
+            let q1 = percentiles.indexOf(25);
+            let q3 = percentiles.indexOf(75);
+            
+            if(q1 > -1 && q3 > -1) {
+                q1 = this.p[q1][1];
+                q3 = this.p[q3][1];
+                this.iqr = {
+                    value:q3-q1, 
+                    min:q1-1.5*(q3-q1), 
+                    max:q3+1.5*(q3-q1)
+                };
+            }
         }
         
         this.sum = 0;
@@ -39,14 +53,22 @@ export class ts_summary {
         this.max = data[0];
         this.mean = 0;
         
+        /* calculate variance by Welford's method */
+        let delta, m2 = 0;
+        
         for(i=0; i<len; ++i) {
             this.sum += data[i];
             if(data[i] < this.min) this.min = data[i];
             if(data[i] > this.max) this.max = data[i];
+            
+            delta = data[i]-this.mean;
             this.mean = (data[i] + this.mean*i)/(i+1);
+            m2 += delta*(data[i]-this.mean);
         }
         
         this.count = len;
         this.elapsed = ts.time[len-1] - ts.time[0];
+        this.variance = m2/len;
+        this.stdev = Math.sqrt(this.variance);
     }
 }
