@@ -20,11 +20,11 @@ Var     = ${summ.variance}<br>
 Stdev   = ${summ.stdev}<br>
 IQR     = ${summ.iqr.value}<br>
 IQR box = [${summ.iqr.min}, ${summ.iqr.max}]<br>
-p25     = ${summ.p[0]}<br>
-p50     = ${summ.p[1]}<br>
-p75     = ${summ.p[2]}<br>
-p90     = ${summ.p[3]}<br>
-p95     = ${summ.p[4]}<br>
-p99     = ${summ.p[5]}<br>
+p25     = ${summ.p[25]}<br>
+p50     = ${summ.p[50]}<br>
+p75     = ${summ.p[75]}<br>
+p90     = ${summ.p[90]}<br>
+p95     = ${summ.p[95]}<br>
+p99     = ${summ.p[99]}<br>
 `;
 }

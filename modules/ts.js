@@ -30,16 +30,14 @@ export class ts_summary {
                 else
                     p = data[p_k] + p_d*(data[p_k+1] - data[p_k]);
                 
-                this.p.push([percentiles[i],p]);
+                this.p[percentiles[i]] = p;
             }
 
             /* automatic IQR stats */
-            let q1 = percentiles.indexOf(25);
-            let q3 = percentiles.indexOf(75);
+            let q1 = this.p[25];
+            let q3 = this.p[75];
             
-            if(q1 > -1 && q3 > -1) {
-                q1 = this.p[q1][1];
-                q3 = this.p[q3][1];
+            if(q1 && q3) {
                 this.iqr = {
                     value:q3-q1, 
                     min:q1-1.5*(q3-q1), 
