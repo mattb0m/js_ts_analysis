@@ -37,14 +37,15 @@ export class ts_summary {
         this.sum = 0;
         this.min = data[0];
         this.max = data[0];
+        this.mean = 0;
         
         for(i=0; i<len; ++i) {
             this.sum += data[i];
             if(data[i] < this.min) this.min = data[i];
             if(data[i] > this.max) this.max = data[i];
+            this.mean = (data[i] + this.mean*i)/(i+1);
         }
         
-        this.mean = this.sum/len;
         this.count = len;
         this.elapsed = ts.time[len-1] - ts.time[0];
     }
