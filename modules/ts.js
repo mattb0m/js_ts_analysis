@@ -1,7 +1,8 @@
 'using strict';
 
 export class ts {
-    constructor(time, data) {
+    constructor(name, time, data) {
+        this.name = name;
         time ? this.time = time : this.time = [];
         data ? this.data = data : this.data = [];
     }
@@ -10,18 +11,18 @@ export class ts {
 /* percentiles computed by NIST method. copies ts data to sort. */
 export class ts_summary {
     constructor(ts, percentiles) {
-        let i, data=ts.data.slice(), len=data.length;
+        let data=ts.data.slice();
+        const len=data.length;
         
         /* sort to calculate percentiles */
         if(percentiles) {
             data.sort((x,y)=>(x-y));
-            let p_len, p, p_k, p_d;
             this.p = [];
             
-            for(i=0, p_len = percentiles.length; i<p_len; ++i) {
-                p = percentiles[i]/100*(len+1);
-                p_k = p|0;
-                p_d = p%1;
+            percentiles.forEach((percentile) => {
+                let p = percentile/100*(len+1);
+                let p_k = p|0;
+                let p_d = p%1;
                 
                 if(p_k === 0)
                     p = data[0];
@@ -30,18 +31,18 @@ export class ts_summary {
                 else
                     p = data[p_k] + p_d*(data[p_k+1] - data[p_k]);
                 
-                this.p[percentiles[i]] = p;
-            }
+                this.p[percentile] = p;
+            });
 
             /* automatic IQR stats */
-            let q1 = this.p[25];
-            let q3 = this.p[75];
+            const q1 = this.p[25], q3 = this.p[75];
             
             if(q1 && q3) {
+                const iqr = q3-q1;
                 this.iqr = {
-                    value:q3-q1, 
-                    min:q1-1.5*(q3-q1), 
-                    max:q3+1.5*(q3-q1)
+                    value:iqr, 
+                    min:q1-1.5*iqr, 
+                    max:q3+1.5*iqr
                 };
             }
         }
@@ -52,16 +53,17 @@ export class ts_summary {
         this.mean = 0;
         
         /* calculate variance by Welford's method */
-        let delta, m2 = 0;
+        let m2 = 0;
         
-        for(i=0; i<len; ++i) {
-            this.sum += data[i];
-            if(data[i] < this.min) this.min = data[i];
-            if(data[i] > this.max) this.max = data[i];
+        for(let i=0, delta; i<len; ++i) {
+            let dat = data[i];
+            this.sum += dat;
+            if(dat < this.min) this.min = dat;
+            if(dat > this.max) this.max = dat;
             
-            delta = data[i]-this.mean;
-            this.mean = (data[i] + this.mean*i)/(i+1);
-            m2 += delta*(data[i]-this.mean);
+            delta = dat-this.mean;
+            this.mean = (dat + this.mean*i)/(i+1);
+            m2 += delta*(dat-this.mean);
         }
         
         this.count = len;

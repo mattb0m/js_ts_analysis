@@ -1,7 +1,7 @@
 import * as TS from '../modules/ts.js';
 
 document.body.onload = () => {
-    let ts1 = new TS.ts();
+    let ts1 = new TS.ts('Random Data Set');
 
     for(let i=0; i < 1000000; ++i) {
         ts1.time.push(Date.now());
@@ -10,6 +10,8 @@ document.body.onload = () => {
 
     let summ = new TS.ts_summary(ts1, [25,50,75,90,95,99]);
     document.getElementById('summary').innerHTML = `
+${ts1.name}
+---------------------------------------------------
 Count   = ${summ.count}<br>
 Elapsed = ${summ.elapsed}<br>
 Sum     = ${summ.sum}<br>
