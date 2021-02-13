@@ -1,6 +1,10 @@
 'using strict';
 
 export class ts {
+    name;
+    time;
+    data;
+    
     constructor(name, time, data) {
         this.name = name;
         time ? this.time = time : this.time = [];
@@ -10,6 +14,17 @@ export class ts {
 
 /* percentiles computed by NIST method. copies ts data to sort. */
 export class ts_summary {
+    sum = 0;
+    min;
+    max;
+    mean = 0;
+    count;
+    elapsed;
+    variance;
+    stdev;
+    p = [];
+    iqr = {value:0, min:0, max:0}
+    
     constructor(ts, percentiles) {
         let data=ts.data.slice();
         const len=data.length;
@@ -17,7 +32,6 @@ export class ts_summary {
         /* sort to calculate percentiles */
         if(percentiles) {
             data.sort((x,y)=>(x-y));
-            this.p = [];
             
             percentiles.forEach((percentile) => {
                 let p = percentile/100*(len+1);
@@ -38,19 +52,14 @@ export class ts_summary {
             const q1 = this.p[25], q3 = this.p[75];
             
             if(q1 && q3) {
-                const iqr = q3-q1;
-                this.iqr = {
-                    value:iqr, 
-                    min:q1-1.5*iqr, 
-                    max:q3+1.5*iqr
-                };
+                this.iqr.value = q3-q1; 
+                this.iqr.min = q1-1.5*this.iqr.value; 
+                this.iqr.max = q3+1.5*this.iqr.value; 
             }
         }
         
-        this.sum = 0;
         this.min = data[0];
         this.max = data[0];
-        this.mean = 0;
         
         /* calculate variance by Welford's method */
         let m2 = 0;
