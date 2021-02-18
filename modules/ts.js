@@ -1,6 +1,6 @@
 'using strict';
 
-export class ts {
+export class TimeSeries {
     name;
     time;
     data;
@@ -13,7 +13,8 @@ export class ts {
 }
 
 /* percentiles computed by NIST method. copies ts data to sort. */
-export class ts_summary {
+export class TsSummary {
+    name;
     sum = 0;
     min;
     max;
@@ -24,10 +25,13 @@ export class ts_summary {
     stdev;
     p = [];
     iqr = {value:0, min:0, max:0}
+    static simple_stats = ['sum','min','max','mean','count','variance','stdev'];
     
     constructor(ts, percentiles) {
         let data=ts.data.slice();
         const len=data.length;
+        
+        this.name = ts.name;
         
         /* sort to calculate percentiles */
         if(percentiles) {
@@ -79,5 +83,15 @@ export class ts_summary {
         this.elapsed = ts.time[len-1] - ts.time[0];
         this.variance = m2/len;
         this.stdev = Math.sqrt(this.variance);
+    }
+    
+    /* return computed stat, whose name is passed as a string */
+    get_measure(str) {
+        if(TsSummary.simple_stats.includes(str))
+            return this[str];
+        else if(/p\[\d+\]/.test(str))
+            return this.p[/p\[(\d+)\]/.exec(str)[1]];
+        else if(str == 'iqr')
+            return this.iqr.value;
     }
 }
