@@ -16,6 +16,39 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `runs`
+--
+
+DROP TABLE IF EXISTS `runs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `runs` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `test_id` int(11) DEFAULT NULL,
+  `beg` datetime NOT NULL,
+  `end` datetime NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `runs_fk_1` (`test_id`),
+  CONSTRAINT `runs_fk_1` FOREIGN KEY (`test_id`) REFERENCES `test` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `summary`
+--
+
+DROP TABLE IF EXISTS `summary`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `summary` (
+  `id` int(11) NOT NULL,
+  `stats` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`stats`)),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `summary_ibfk_1` FOREIGN KEY (`id`) REFERENCES `runs` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `test`
 --
 
@@ -38,4 +71,4 @@ CREATE TABLE `test` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2021-02-18 19:31:25
+-- Dump completed on 2021-02-18 20:57:45
